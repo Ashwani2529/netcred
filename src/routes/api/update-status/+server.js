@@ -2,7 +2,7 @@ import { json } from '@sveltejs/kit';
 import crypto from 'node:crypto';
 import db from "../../../../prisma/db.js";
 
-const signingKey = "7a8f33f22d9d47885f95b574837a2ca9-9dfbeecd-2f6df695";
+const signingKey = "Process.env.Sign_KEY";
 
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
