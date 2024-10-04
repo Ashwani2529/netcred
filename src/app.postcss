@@ -1,0 +1,69 @@
+@import url("icons.css");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.modal .div:empty {
+    padding: 0px;
+    border: 0px;
+}
+
+.modal .overscroll-contain::-webkit-scrollbar {
+    width: 8px;
+}
+
+.modal .overscroll-contain::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+
+.modal .overscroll-contain::-webkit-scrollbar-thumb {
+    background-color: #C1C1C1;
+    border-radius: 100px;
+}
+
+.modal .overscroll-contain::-webkit-scrollbar-thumb:hover {
+    background-color: #a1a1a1;
+}
+
+button:disabled {
+    opacity: 0.5;
+}
+
+.svelte-tags-input-layout {
+    padding: 0.625rem!important;
+    background-color: #f7fafc!important;
+    border-radius: 0.5rem!important;
+    border-color: #e5e7eb!important;
+    outline: none!important;
+    gap: 0.5rem;
+}
+
+.dark .svelte-tags-input-layout {
+    background-color: rgb(55 65 81)!important;
+    border-color: rgb(75 85 99)!important;
+    color: white;
+}
+
+.svelte-tags-input-tag {
+    padding: 0.125rem 0.625rem!important;
+    border-radius: 0.375rem!important;
+    margin: 0!important;
+}
+
+.svelte-tags-input {
+    box-shadow: none!important;
+    margin: 0!important;
+}
+
+.dark .invert-image-dark-mode {
+  filter: invert(1);
+}
+
+.dark text {
+    fill: white;
+}
+
+.dark .apexcharts-legend-series span {
+    color: white!important;
+}

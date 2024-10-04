@@ -1,0 +1,229 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Organization {
+  id                   String    @id @unique
+  name                 String    @db.VarChar(255)
+  legal_name           String?   @db.Text
+  email                String    @unique @db.VarChar(255)
+  email_verified       Boolean
+  hash                 String    @db.Text
+  password             String    @db.Text
+  credits              Int
+  logo                 String?   @db.Text
+  pricing              Float     @db.Float
+  currency             String    @db.VarChar(255)
+  plan                 String    @db.VarChar(255)
+  verified             Int       @default(0)
+  website              String?   @db.VarChar(255)
+  linkedin             String?   @db.VarChar(255)
+  date_joined          DateTime  @default(now())
+  last_login           DateTime  @updatedAt
+  tax_id               String?   @db.VarChar(255)
+  country              String?   @db.VarChar(255)
+  state                String?   @db.VarChar(255)
+  user_ip              String?
+  user_agent           String?
+  geolocation          Json?
+  whitelabel           Json?
+  custom_domain_id     String?   @db.VarChar(255)
+  custom_domain_name   String?   @db.VarChar(255)
+  custom_domain_status Int?
+  custom_email_id      String?   @db.VarChar(255)
+  custom_email_name    String?   @db.VarChar(255)
+  custom_email_dkim_host String?   @db.VarChar(255)
+  custom_email_dkim_value String?   @db.VarChar(255)
+  custom_email_state   Int?
+  basic_details        Json?  @default("{}")
+  social_media_links   Json?  @default("{}")
+  description          String?   @db.Text
+  billings             Billing[]
+  designs              Design[]
+  emails               Email[]
+  events               Event[]
+  groups               Group[]
+
+  @@map("organizations")
+}
+
+model Billing {
+  id           Int          @id @unique @default(autoincrement())
+  amount       Float
+  credits      Int
+  type         String
+  org_id       String
+  status       String
+  currency     String
+  discount     Float
+  tax_amount   Float
+  order_id     String
+  payment_id   String
+  signature    String
+  timestamp    DateTime     @default(now())
+  name         String       @db.VarChar(255)
+  legal_name   String?      @db.Text
+  tax_id       String?      @db.VarChar(255)
+  country      String?      @db.VarChar(255)
+  state        String?      @db.VarChar(255)
+  organization Organization @relation(fields: [org_id], references: [id])
+
+  @@index([org_id], map: "billings_org_id_fkey")
+  @@map("billings")
+}
+
+model Group {
+  id                String       @id @unique
+  org_id            String
+  name              String
+  status            String
+  template          String
+  timestamp         DateTime     @default(now())
+  description       String?
+  updated_at        DateTime
+  total_credentials Int
+  email             Int?         @default(-1)
+  expiry            String?
+  identifier        String?
+  schedule          String?
+  skills            Json?
+  type              String?
+  criteria          Json?
+  secondaryPage     String?
+  credentials       Credential[]
+  events            Event[]
+  organization      Organization @relation(fields: [org_id], references: [id])
+
+  @@index([org_id], map: "groups_org_id_fkey")
+  @@map("groups")
+}
+
+model Credential {
+  id              String    @id @unique
+  org_id          String    @db.VarChar(255)
+  group_id        String
+  recipient_email String
+  recipient_name  String
+  extra           Json
+  status          String
+  created_at      DateTime  @default(now())
+  updated_at      DateTime? @db.DateTime(0)
+  delivered_at    DateTime?
+  opened_at       DateTime?
+  clicked_at      DateTime?
+  viewed_at       DateTime?
+  shared_at       DateTime?
+  expiry          DateTime?
+  issued          DateTime? @default(now())
+  job             String?
+  group           Group     @relation(fields: [group_id], references: [id])
+  events          Event[]
+
+  @@index([group_id], map: "credentials_group_id_fkey")
+  @@map("credentials")
+}
+
+model Event {
+  id            String       @id @unique
+  credential_id String
+  org_id        String
+  group_id      String
+  event_type    String
+  timestamp     DateTime     @default(now())
+  user_ip       String?
+  user_agent    String?
+  referrer_url  String?
+  geolocation   Json?
+  credential    Credential   @relation(fields: [credential_id], references: [id])
+  group         Group        @relation(fields: [group_id], references: [id])
+  organization  Organization @relation(fields: [org_id], references: [id])
+
+  @@index([org_id], map: "groups_org_id_fkey")
+  @@index([group_id], map: "credentials_group_id_fkey")
+  @@index([credential_id], map: "events_credential_id_fkey")
+  @@map("events")
+}
+
+model Token {
+  id        Int      @id @unique @default(autoincrement())
+  name      String
+  token     String   @unique
+  org_id    String
+  timestamp DateTime @default(now())
+
+  @@map("tokens")
+}
+
+model PasswordReset {
+  id        Int      @id @unique @default(autoincrement())
+  email     String   @unique
+  code      String
+  timestamp DateTime @default(now())
+
+  @@map("passwordreset")
+}
+
+model Media {
+  id        Int      @id @unique @default(autoincrement())
+  url       String
+  designId  String
+  timestamp DateTime @default(now())
+
+  @@map("media")
+}
+
+model Template {
+  id       String  @id @unique
+  name     String
+  canvas   Json
+  items    Json
+  preview  String
+  category String?
+  style    String?
+  type     String
+
+  @@map("templates")
+}
+
+model Email {
+  id           String       @id @unique
+  org_id       String
+  name         String
+  subject      String
+  content      Json?
+  branding     Json?
+  timestamp    DateTime     @default(now())
+  organization Organization @relation(fields: [org_id], references: [id])
+
+  @@index([org_id], map: "groups_org_id_fkey")
+  @@map("emails")
+}
+
+model Design {
+  id           String       @id @unique
+  org_id       String
+  name         String
+  status       String
+  canvas       Json?
+  items        Json?
+  attributes   Json?
+  preview      String?
+  template     String?
+  timestamp    DateTime     @default(now())
+  updated      DateTime     @updatedAt
+  type         String?      @default("certificate")
+  organization Organization @relation(fields: [org_id], references: [id])
+
+  @@index([org_id], map: "groups_org_id_fkey")
+  @@map("designs")
+}
+
+model Whitelabel {
+  org_id String @id @db.VarChar(255)
+  domain String @unique(map: "domain") @db.VarChar(255)
+}
